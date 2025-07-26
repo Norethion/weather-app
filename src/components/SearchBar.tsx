@@ -111,10 +111,10 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch, onLocationSearch, loadi
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="w-full max-w-md mx-auto mb-6" 
+      className="w-full max-w-md mx-auto mb-4 sm:mb-6" 
       ref={searchRef}
     >
-      <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row items-center gap-2">
+      <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row items-center gap-3 sm:gap-2">
         <motion.div 
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
@@ -130,7 +130,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch, onLocationSearch, loadi
             }}
             onKeyDown={handleKeyDown}
             placeholder="Şehir, kasaba ya da ülke adı..."
-            className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+            className="w-full px-4 py-3 sm:py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 dark:bg-gray-700 dark:border-gray-600 dark:text-white text-base min-h-[44px] touch-manipulation"
           />
           
           <AnimatePresence>
@@ -150,7 +150,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch, onLocationSearch, loadi
                     transition={{ delay: index * 0.05 }}
                     whileHover={{ scale: 1.02 }}
                     onClick={() => handleSuggestionClick(suggestion)}
-                    className={`px-4 py-2 cursor-pointer transition-colors focus:outline-none focus:bg-blue-50 dark:focus:bg-blue-900/30 ${
+                    className={`px-4 py-3 sm:py-2 cursor-pointer transition-colors focus:outline-none focus:bg-blue-50 dark:focus:bg-blue-900/30 min-h-[44px] touch-manipulation ${
                       index === selectedIndex ? 'bg-blue-100 dark:bg-blue-600 text-white' : 'hover:bg-gray-100 dark:hover:bg-gray-700'
                     }`}
                   >
@@ -176,7 +176,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch, onLocationSearch, loadi
             whileTap={{ scale: 0.95 }}
             type="submit"
             disabled={loading}
-            className="flex-1 sm:flex-none px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition disabled:opacity-50"
+            className="flex-1 sm:flex-none px-4 py-3 sm:py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition disabled:opacity-50 text-base min-h-[44px] touch-manipulation"
           >
             {loading ? t('loading') : t('search')}
           </motion.button>
@@ -188,7 +188,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch, onLocationSearch, loadi
               type="button"
               onClick={onLocationSearch}
               disabled={loading}
-              className="px-3 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition disabled:opacity-50"
+              className="px-4 py-3 sm:px-3 sm:py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition disabled:opacity-50 min-h-[44px] min-w-[44px] touch-manipulation"
               title={t('currentLocation')}
             >
               📍

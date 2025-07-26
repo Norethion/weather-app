@@ -152,14 +152,14 @@ const App: React.FC = () => {
       <div className="min-h-screen">
         {currentWeather ? (
           <DynamicBackground key={actualTheme} weather={currentWeather}>
-            <div className="container mx-auto px-4 py-8">
+            <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-8">
               {/* Header */}
               <motion.div 
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="flex flex-col sm:flex-row justify-between items-center mb-8 gap-4"
+                className="flex flex-col sm:flex-row justify-between items-center mb-4 sm:mb-8 gap-3 sm:gap-4"
               >
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-3 sm:gap-4 w-full sm:w-auto justify-center sm:justify-start">
                   <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
@@ -168,20 +168,20 @@ const App: React.FC = () => {
                       setError('');
                       setLoading(false);
                     }}
-                    className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-lg transition-all duration-300 flex items-center gap-2"
+                    className="px-3 py-2 sm:px-4 sm:py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-lg transition-all duration-300 flex items-center gap-2 text-sm sm:text-base min-h-[44px] touch-manipulation"
                   >
-                    🏠 {t('home') || 'Ana Ekran'}
+                    🏠 <span className="hidden sm:inline">{t('home') || 'Ana Ekran'}</span>
                   </motion.button>
                   <motion.h1 
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    className="text-4xl font-bold text-white"
+                    className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white text-center sm:text-left"
                   >
                     {t('weatherApp')}
                   </motion.h1>
                 </div>
                 
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2 sm:gap-4 w-full sm:w-auto justify-center sm:justify-end">
                   <ThemeSelector />
                   <LanguageSelector />
                   {user ? (
@@ -189,7 +189,7 @@ const App: React.FC = () => {
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
                       onClick={handleLogout}
-                      className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+                      className="px-3 py-2 sm:px-4 sm:py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors text-sm sm:text-base min-h-[44px] touch-manipulation"
                     >
                       {t('logout')}
                     </motion.button>
@@ -198,7 +198,7 @@ const App: React.FC = () => {
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
                       onClick={() => setShowAuthModal(true)}
-                      className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+                      className="px-3 py-2 sm:px-4 sm:py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-sm sm:text-base min-h-[44px] touch-manipulation"
                     >
                       {t('login')}
                     </motion.button>
@@ -229,16 +229,16 @@ const App: React.FC = () => {
               )}
 
               {/* Main Content with Sidebar */}
-              <div className="flex flex-col lg:flex-row gap-6">
+              <div className="flex flex-col lg:flex-row gap-4 sm:gap-6">
                 {/* Sidebar - Favorites Panel */}
-                <div className="lg:w-80 lg:flex-shrink-0">
+                <div className="lg:w-80 lg:flex-shrink-0 order-2 lg:order-1">
                   <LazySection threshold={0.3}>
                     <FavoritesPanel onCitySelect={handleCitySelect} />
                   </LazySection>
                 </div>
 
                 {/* Main Content */}
-                <div className="flex-1 space-y-8">
+                <div className="flex-1 space-y-6 sm:space-y-8 order-1 lg:order-2">
                   {/* Current Weather */}
                   <WeatherCard 
                     weather={currentWeather}
@@ -271,22 +271,36 @@ const App: React.FC = () => {
             key={actualTheme}
             className={`min-h-screen ${actualTheme === 'dark' ? 'bg-gray-900' : 'bg-gradient-to-br from-blue-200 to-blue-500'} flex items-center justify-center transition-all duration-500`}
           >
-            <div className="container mx-auto px-4 py-8">
+            <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-8">
               {/* Header */}
               <motion.div 
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="flex flex-col sm:flex-row justify-between items-center mb-8 gap-4"
+                className="flex flex-col sm:flex-row justify-between items-center mb-4 sm:mb-8 gap-3 sm:gap-4"
               >
-                <motion.h1 
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  className="text-4xl font-bold text-white"
-                >
-                  {t('weatherApp')}
-                </motion.h1>
+                <div className="flex items-center gap-3 sm:gap-4 w-full sm:w-auto justify-center sm:justify-start">
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => {
+                      setCurrentWeather(null);
+                      setError('');
+                      setLoading(false);
+                    }}
+                    className="px-3 py-2 sm:px-4 sm:py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-lg transition-all duration-300 flex items-center gap-2 text-sm sm:text-base min-h-[44px] touch-manipulation"
+                  >
+                    🏠 <span className="hidden sm:inline">{t('home') || 'Ana Ekran'}</span>
+                  </motion.button>
+                  <motion.h1 
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white text-center sm:text-left"
+                  >
+                    {t('weatherApp')}
+                  </motion.h1>
+                </div>
                 
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2 sm:gap-4 w-full sm:w-auto justify-center sm:justify-end">
                   <ThemeSelector />
                   <LanguageSelector />
                   {user ? (
@@ -294,7 +308,7 @@ const App: React.FC = () => {
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
                       onClick={handleLogout}
-                      className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+                      className="px-3 py-2 sm:px-4 sm:py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors text-sm sm:text-base min-h-[44px] touch-manipulation"
                     >
                       {t('logout')}
                     </motion.button>
@@ -303,7 +317,7 @@ const App: React.FC = () => {
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
                       onClick={() => setShowAuthModal(true)}
-                      className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+                      className="px-3 py-2 sm:px-4 sm:py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-sm sm:text-base min-h-[44px] touch-manipulation"
                     >
                       {t('login')}
                     </motion.button>

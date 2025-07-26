@@ -39,7 +39,7 @@ const ThemeSelector: React.FC = () => {
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         onClick={() => setIsOpen(!isOpen)}
-        className="px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg shadow-lg hover:shadow-xl transition-all duration-300"
+        className="px-3 py-2 sm:px-4 sm:py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 text-sm sm:text-base min-h-[44px] touch-manipulation"
       >
         <span className="flex items-center gap-2">
           {getThemeIcon()} {getThemeName()}
@@ -59,7 +59,7 @@ const ThemeSelector: React.FC = () => {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -10, scale: 0.95 }}
             transition={{ duration: 0.2 }}
-            className="absolute top-full left-0 mt-2 w-64 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 z-50 backdrop-blur-sm"
+            className="absolute top-full left-0 mt-2 w-64 sm:w-72 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 z-50 backdrop-blur-sm"
           >
             <div className="p-4">
               <h3 className="text-lg font-semibold mb-4 text-gray-800 dark:text-white">
@@ -73,7 +73,7 @@ const ThemeSelector: React.FC = () => {
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={() => handleThemeSelect(option.value)}
-                    className={`relative cursor-pointer rounded-lg p-3 border-2 transition-all duration-200 ${
+                    className={`relative cursor-pointer rounded-lg p-3 border-2 transition-all duration-200 min-h-[44px] touch-manipulation ${
                       theme === option.value 
                         ? 'border-blue-500 shadow-lg bg-blue-50 dark:bg-blue-900/20' 
                         : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'

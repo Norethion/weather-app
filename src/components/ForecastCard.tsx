@@ -74,13 +74,13 @@ const ForecastCard: React.FC<ForecastCardProps> = ({ forecast, timezone }) => {
       initial="hidden"
       animate="visible"
       variants={containerVariants}
-      className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6"
+      className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 sm:p-6"
     >
       <motion.h3 
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.5 }}
-        className="text-2xl font-bold mb-6 text-gray-800 dark:text-white"
+        className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 text-gray-800 dark:text-white"
       >
         {t('forecast')}
       </motion.h3>
@@ -88,7 +88,7 @@ const ForecastCard: React.FC<ForecastCardProps> = ({ forecast, timezone }) => {
       {/* Günlük kartlar */}
       <motion.div 
         variants={containerVariants}
-        className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6"
+        className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 mb-4 sm:mb-6"
       >
         {dailyForecasts.map((item, idx) => {
           const dayLabel = new Date((item.dt + timezone) * 1000).toLocaleDateString(i18n.language === 'tr' ? 'tr-TR' : 'en-US', { weekday: 'long' });

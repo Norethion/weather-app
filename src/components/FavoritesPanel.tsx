@@ -12,16 +12,16 @@ const FavoritesPanel: React.FC<FavoritesPanelProps> = ({ onCitySelect }) => {
   const { favorites, clearFavorites } = useFavoriteCities();
 
   return (
-    <div className="bg-white/10 dark:bg-gray-800/20 backdrop-blur-sm rounded-xl p-6 border border-white/20 dark:border-gray-700/50 shadow-xl">
-      <div className="flex justify-between items-center mb-6">
-        <h3 className="text-xl font-bold text-white dark:text-white flex items-center gap-2">
-          <span className="text-2xl">⭐</span>
+    <div className="bg-white/10 dark:bg-gray-800/20 backdrop-blur-sm rounded-xl p-4 sm:p-6 border border-white/20 dark:border-gray-700/50 shadow-xl">
+      <div className="flex justify-between items-center mb-4 sm:mb-6">
+        <h3 className="text-lg sm:text-xl font-bold text-white dark:text-white flex items-center gap-2">
+          <span className="text-xl sm:text-2xl">⭐</span>
           {t('favorites')}
         </h3>
         {favorites.length > 0 && (
           <button
             onClick={clearFavorites}
-            className="text-xs text-red-400 hover:text-red-300 dark:text-red-400 dark:hover:text-red-300 transition-colors px-2 py-1 rounded hover:bg-red-500/10"
+            className="text-xs text-red-400 hover:text-red-300 dark:text-red-400 dark:hover:text-red-300 transition-colors px-2 py-1 rounded hover:bg-red-500/10 min-h-[32px] min-w-[32px] touch-manipulation"
             title={t('clearFavorites')}
           >
             ✕
@@ -29,10 +29,10 @@ const FavoritesPanel: React.FC<FavoritesPanelProps> = ({ onCitySelect }) => {
         )}
       </div>
       
-      <div className="space-y-3">
+      <div className="space-y-2 sm:space-y-3">
         {favorites.length === 0 ? (
-          <div className="text-center py-8">
-            <div className="text-4xl mb-3">📍</div>
+          <div className="text-center py-6 sm:py-8">
+            <div className="text-3xl sm:text-4xl mb-3">📍</div>
             <p className="text-gray-300 dark:text-gray-400 text-sm">
               {t('noFavorites')}
             </p>
@@ -51,9 +51,9 @@ const FavoritesPanel: React.FC<FavoritesPanelProps> = ({ onCitySelect }) => {
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => onCitySelect(city)}
-                className="w-full flex items-center justify-between bg-gradient-to-r from-blue-500/20 to-purple-500/20 dark:from-blue-600/20 dark:to-purple-600/20 hover:from-blue-500/30 hover:to-purple-500/30 dark:hover:from-blue-600/30 dark:hover:to-purple-600/30 rounded-lg px-4 py-3 text-left transition-all duration-200 border border-white/10 dark:border-gray-600/30 backdrop-blur-sm"
+                className="w-full flex items-center justify-between bg-gradient-to-r from-blue-500/20 to-purple-500/20 dark:from-blue-600/20 dark:to-purple-600/20 hover:from-blue-500/30 hover:to-purple-500/30 dark:hover:from-blue-600/30 dark:hover:to-purple-600/30 rounded-lg px-3 sm:px-4 py-3 text-left transition-all duration-200 border border-white/10 dark:border-gray-600/30 backdrop-blur-sm min-h-[44px] touch-manipulation"
               >
-                <span className="font-medium text-white dark:text-white truncate">
+                <span className="font-medium text-white dark:text-white truncate text-sm sm:text-base">
                   {city}
                 </span>
                 <span className="text-blue-300 dark:text-blue-400 ml-2 text-lg">→</span>

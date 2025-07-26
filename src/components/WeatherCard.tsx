@@ -55,7 +55,7 @@ const WeatherCard: React.FC<WeatherCardProps> = ({ weather, airQuality, onRefres
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, ease: "easeOut" }}
-      className={`${backgroundClass} rounded-lg shadow-lg p-6 text-white transition-all duration-300 relative overflow-hidden`}
+      className={`${backgroundClass} rounded-lg shadow-lg p-4 sm:p-6 text-white transition-all duration-300 relative overflow-hidden`}
     >
       {/* Arka plan overlay'i */}
       <div className="absolute inset-0 bg-black bg-opacity-20"></div>
@@ -111,7 +111,7 @@ const WeatherCard: React.FC<WeatherCardProps> = ({ weather, airQuality, onRefres
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.95 }}
               onClick={handleFavoriteToggle}
-              className={`p-2 rounded-full transition-colors ${isFavorite
+              className={`p-2 sm:p-3 rounded-full transition-colors min-h-[44px] min-w-[44px] touch-manipulation ${isFavorite
                   ? 'bg-yellow-500 hover:bg-yellow-600'
                   : 'bg-white bg-opacity-20 hover:bg-opacity-30'
                 }`}
@@ -125,7 +125,7 @@ const WeatherCard: React.FC<WeatherCardProps> = ({ weather, airQuality, onRefres
                 whileHover={{ scale: 1.1, rotate: 180 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={onRefresh}
-                className="p-2 rounded-full bg-white bg-opacity-20 hover:bg-opacity-30 transition-colors"
+                className="p-2 sm:p-3 rounded-full bg-white bg-opacity-20 hover:bg-opacity-30 transition-colors min-h-[44px] min-w-[44px] touch-manipulation"
                 title="Yenile"
               >
                 🔄
@@ -138,7 +138,7 @@ const WeatherCard: React.FC<WeatherCardProps> = ({ weather, airQuality, onRefres
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.7, duration: 0.6 }}
-          className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 space-y-4 sm:space-y-0"
+          className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-6 space-y-4 sm:space-y-0"
         >
           <motion.div 
             initial={{ opacity: 0, scale: 0.8 }}
@@ -146,10 +146,10 @@ const WeatherCard: React.FC<WeatherCardProps> = ({ weather, airQuality, onRefres
             transition={{ delay: 0.8, duration: 0.5 }}
             className="text-center"
           >
-            <div className="w-20 h-20 sm:w-24 sm:h-24 mx-auto">
+            <div className="w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 mx-auto">
               <Lottie autoplay loop animationData={lottieAnim} style={{ height: '100%', width: '100%' }} />
             </div>
-            <p className="text-base sm:text-lg capitalize">{weather.weather[0].description}</p>
+            <p className="text-sm sm:text-base lg:text-lg capitalize">{weather.weather[0].description}</p>
           </motion.div>
 
           <motion.div 
@@ -162,11 +162,11 @@ const WeatherCard: React.FC<WeatherCardProps> = ({ weather, airQuality, onRefres
               initial={{ opacity: 0, scale: 0.5 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 1.0, duration: 0.6, type: "spring", stiffness: 200 }}
-              className="text-4xl sm:text-5xl font-bold"
+              className="text-3xl sm:text-4xl lg:text-5xl font-bold"
             >
               {Math.round(weather.main.temp)}°C
             </motion.p>
-            <p className="text-base sm:text-lg opacity-90">
+            <p className="text-sm sm:text-base lg:text-lg opacity-90">
               {t('feelsLike')}: {Math.round(weather.main.feels_like)}°C
             </p>
           </motion.div>
@@ -176,23 +176,23 @@ const WeatherCard: React.FC<WeatherCardProps> = ({ weather, airQuality, onRefres
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.1, duration: 0.6 }}
-          className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-6"
+          className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-4 sm:mb-6"
         >
           <motion.div 
             whileHover={{ scale: 1.02 }}
-            className="bg-white bg-opacity-20 rounded-lg p-3"
+            className="bg-white bg-opacity-20 rounded-lg p-3 sm:p-4"
           >
-            <p className="text-sm opacity-75">{t('humidity')}</p>
-            <p className="text-xl font-semibold">{weather.main.humidity}%</p>
+            <p className="text-xs sm:text-sm opacity-75">{t('humidity')}</p>
+            <p className="text-lg sm:text-xl font-semibold">{weather.main.humidity}%</p>
             <p className="text-xs opacity-75">{getHumidityText(weather.main.humidity)}</p>
           </motion.div>
 
           <motion.div 
             whileHover={{ scale: 1.02 }}
-            className="bg-white bg-opacity-20 rounded-lg p-3"
+            className="bg-white bg-opacity-20 rounded-lg p-3 sm:p-4"
           >
-            <p className="text-sm opacity-75">{t('wind')}</p>
-            <p className="text-xl font-semibold">{weather.wind.speed} m/s</p>
+            <p className="text-xs sm:text-sm opacity-75">{t('wind')}</p>
+            <p className="text-lg sm:text-xl font-semibold">{weather.wind.speed} m/s</p>
             <p className="text-xs opacity-75">{getWindDirection(weather.wind.deg)}</p>
           </motion.div>
 
