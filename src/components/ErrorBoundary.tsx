@@ -22,7 +22,7 @@ class ErrorBoundaryClass extends Component<Props & { t: (key: string) => string 
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error('ErrorBoundary caught an error:', error, errorInfo);
+
     this.setState({ error, errorInfo });
   }
 

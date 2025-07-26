@@ -47,7 +47,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch, onLocationSearch, loadi
         setShowSuggestions(true);
         setSelectedIndex(-1);
       } catch (error) {
-        console.warn('City suggestions error:', error);
+  
         const fallbackResults = cityService.getFallbackCitySuggestions(city);
         setSuggestions(fallbackResults);
         setShowSuggestions(true);

@@ -41,11 +41,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess, showE
       onSuccess();
       onClose();
     } catch (error: any) {
-      console.log('AuthModal Error Details:', {
-        code: error.code,
-        message: error.message,
-        fullError: error
-      });
+
       
       let errorMessage = t('generalError') || 'Bir hata oluştu';
       
@@ -69,7 +65,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess, showE
         errorMessage = t('networkError') || 'Ağ bağlantısı hatası. İnternet bağlantınızı kontrol edin';
       }
 
-      console.log('Showing error toast:', errorMessage);
+
       showError(t('error'), errorMessage);
     } finally {
       setLoading(false);

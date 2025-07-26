@@ -18,11 +18,11 @@ export const useGeolocation = () => {
   });
 
   const fetchLocationByIP = async () => {
-    console.log('[Geo] IP tabanlı konum alınmaya çalışılıyor...');
+
     try {
       const response = await fetch('https://ip-api.com/json');
       const data = await response.json();
-      console.log('[Geo] IP tabanlı servis yanıtı:', data);
+      
       if (data && data.status === 'success') {
         setState({
           latitude: data.lat,
@@ -50,14 +50,14 @@ export const useGeolocation = () => {
     setState(prev => ({ ...prev, loading: true, error: null }));
 
     if (!navigator.geolocation) {
-      console.log('[Geo] navigator.geolocation desteklenmiyor, IP fallback çalışacak.');
+
       fetchLocationByIP();
       return;
     }
 
     navigator.geolocation.getCurrentPosition(
       (position) => {
-        console.log('[Geo] Tarayıcıdan konum alındı:', position.coords);
+
         setState({
           latitude: position.coords.latitude,
           longitude: position.coords.longitude,
@@ -66,7 +66,7 @@ export const useGeolocation = () => {
         });
       },
       (error) => {
-        console.log('[Geo] Tarayıcıdan konum alınamadı, hata:', error);
+
         let errorMessage = t('locationError');
         switch (error.code) {
           case error.PERMISSION_DENIED:

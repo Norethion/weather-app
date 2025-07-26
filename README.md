@@ -111,21 +111,73 @@ Uygulama `http://localhost:3000` adresinde açılacaktır.
 
 ## 🚀 Deployment
 
-### **Vercel (Önerilen)**
-1. [Vercel](https://vercel.com) hesabı oluşturun
-2. GitHub repo'nuzu bağlayın
-3. Environment variables'ları Vercel'de ayarlayın
-4. Deploy edin
+### **Vercel (Önerilen) 🚀**
 
-### **Netlify**
-1. [Netlify](https://netlify.com) hesabı oluşturun
-2. `build` klasörünü sürükleyip bırakın
-3. Environment variables'ları ayarlayın
+#### **1. Vercel Hesabı Oluşturun**
+- [vercel.com](https://vercel.com) adresine gidin
+- GitHub hesabınızla giriş yapın
 
-### **GitHub Pages**
+#### **2. Projeyi Vercel'e Bağlayın**
+- Vercel Dashboard'da "New Project" tıklayın
+- GitHub repository'nizi seçin
+- Framework Preset: **Create React App** seçin
+
+#### **3. Build Ayarları**
+```
+Framework Preset: Create React App
+Build Command: npm run build:vercel
+Output Directory: build
+Install Command: npm install
+```
+
+#### **4. Environment Variables Ekleme**
+Vercel Dashboard > Settings > Environment Variables:
+```
+REACT_APP_OPENWEATHER_API_KEY=your_openweather_api_key
+REACT_APP_FIREBASE_API_KEY=your_firebase_api_key
+REACT_APP_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
+REACT_APP_FIREBASE_PROJECT_ID=your_project_id
+REACT_APP_FIREBASE_STORAGE_BUCKET=your_project.appspot.com
+REACT_APP_FIREBASE_MESSAGING_SENDER_ID=123456789
+REACT_APP_FIREBASE_APP_ID=your_app_id
+VISUAL_CROSSING_API_KEY=your_visual_crossing_api_key
+```
+
+#### **5. Deploy**
+- "Deploy" butonuna tıklayın
+- Vercel otomatik olarak build edip yayınlayacak
+
+#### **Vercel Avantajları:**
+✅ Otomatik HTTPS  
+✅ Global CDN  
+✅ Otomatik Deploy (GitHub'a push ettiğinizde)  
+✅ Preview Deployments  
+✅ Environment Variables güvenli yönetimi  
+
+---
+
+### **GitHub Pages 🌐**
+
+#### **1. Repository Ayarları**
+- GitHub repository'nizde **Settings** > **Pages**
+- Source: **Deploy from a branch** seçin
+- Branch: **gh-pages** seçin
+- **Save** tıklayın
+
+#### **2. Environment Variables**
+GitHub Pages'te environment variables kullanılamaz. Bunun yerine:
+- API key'lerinizi güvenli bir şekilde yönetin
+- Production'da API key'lerinizi kısıtlayın
+
+#### **3. Deploy**
 ```bash
 npm run deploy
 ```
+
+#### **4. Site URL'i**
+Site `https://yourusername.github.io/weather-app` adresinde yayınlanacak
+
+
 
 ## 🎯 Kullanım
 

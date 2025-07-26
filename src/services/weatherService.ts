@@ -76,13 +76,7 @@ let apiKeyLogged = false;
 // Check if API key is valid
 const isApiKeyValid = () => {
   const cleanKey = getCleanApiKey();
-  // Only log once during initialization, not on every check
   if (!apiKeyLogged) {
-    console.log("API Key status:", {
-      hasKey: !!cleanKey,
-      keyLength: cleanKey?.length,
-      isValid: cleanKey && cleanKey !== 'your-api-key-here' && cleanKey.length >= 32 && cleanKey.length <= 40
-    });
     apiKeyLogged = true;
   }
   return cleanKey && cleanKey !== 'your-api-key-here' && cleanKey.length >= 32 && cleanKey.length <= 40;
@@ -158,7 +152,6 @@ export const weatherService = {
   // Mevcut hava durumu
   getCurrentWeather: async (city: string): Promise<CurrentWeather> => {
     if (!isApiKeyValid()) {
-      console.warn("API key not available or invalid. Returning mock weather data.");
       return mockWeatherData;
     }
     try {
@@ -172,9 +165,7 @@ export const weatherService = {
       });
       return response.data;
     } catch (error: any) {
-      console.error("Error fetching current weather:", error);
       if (error.response) {
-        console.error("API Response:", error.response.data);
         if (error.response.status === 401) {
           throw new Error("API key geçersiz. Lütfen .env dosyasında REACT_APP_OPENWEATHER_API_KEY değerini kontrol edin.");
         } else if (error.response.status === 429) {
@@ -190,7 +181,6 @@ export const weatherService = {
   // Koordinatlarla mevcut hava durumu
   getCurrentWeatherByCoords: async (lat: number, lon: number): Promise<CurrentWeather> => {
     if (!isApiKeyValid()) {
-      console.warn("API key not available or invalid. Returning mock weather data.");
       return mockWeatherData;
     }
     try {
@@ -205,7 +195,6 @@ export const weatherService = {
       });
       return response.data;
     } catch (error: any) {
-      console.error("Error fetching current weather by coords:", error);
       if (error.response) {
         if (error.response.status === 401) {
           throw new Error("API key geçersiz. Lütfen .env dosyasında REACT_APP_OPENWEATHER_API_KEY değerini kontrol edin.");
@@ -222,7 +211,6 @@ export const weatherService = {
   // 5 günlük tahmin
   getForecast: async (city: string): Promise<{ list: ForecastDay[] }> => {
     if (!isApiKeyValid()) {
-      console.warn("API key not available or invalid. Returning mock forecast data.");
       return { list: mockForecastData };
     }
     try {
@@ -236,7 +224,6 @@ export const weatherService = {
       });
       return response.data;
     } catch (error: any) {
-      console.error("Error fetching forecast:", error);
       if (error.response) {
         if (error.response.status === 401) {
           throw new Error("API key geçersiz. Lütfen .env dosyasında REACT_APP_OPENWEATHER_API_KEY değerini kontrol edin.");
@@ -253,7 +240,6 @@ export const weatherService = {
   // Koordinatlarla 5 günlük tahmin
   getForecastByCoords: async (lat: number, lon: number): Promise<{ list: ForecastDay[] }> => {
     if (!isApiKeyValid()) {
-      console.warn("API key not available or invalid. Returning mock forecast data.");
       return { list: mockForecastData };
     }
     try {
