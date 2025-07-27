@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
-import { collection, query, orderBy, limit, getDocs, where, Timestamp, deleteDoc, doc } from 'firebase/firestore';
+import { collection, query, orderBy, limit, getDocs, where, Timestamp, deleteDoc, doc, writeBatch } from 'firebase/firestore';
 import { db, userDataService } from '../services/firebase';
 import { useToast } from '../hooks/useToast';
 import ConfirmModal from './ConfirmModal';
@@ -362,15 +362,33 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ isOpen, onClose, currentUser })
 
   // Anonim kullanıcıları temizle
   const deleteAnonymousUsers = async () => {
-    setIsDeletingLogs(true); // Aynı loading state'i kullanıyoruz
+    setIsDeletingLogs(true);
     try {
       const anonymousUsers = users.filter(user => user.isAnonymous);
-      const deletePromises = anonymousUsers.map(user => 
-        deleteDoc(doc(db, 'users', user.id))
-      );
-      await Promise.all(deletePromises);
+      
+      // Batch işlemi kullanarak daha güvenli silme
+      const batch = writeBatch(db);
+      
+      anonymousUsers.forEach(user => {
+        const userRef = doc(db, 'users', user.id);
+        batch.delete(userRef);
+        
+        // Kullanıcının loglarını da sil
+        const userLogsQuery = query(
+          collection(db, 'user_logs'),
+          where('userId', '==', user.id)
+        );
+        // Logları da batch'e ekle (silme işlemi için)
+        getDocs(userLogsQuery).then(snapshot => {
+          snapshot.docs.forEach(doc => {
+            batch.delete(doc.ref);
+          });
+        });
+      });
+      
+      await batch.commit();
       await loadUsers();
-      showSuccess('Başarılı', `${anonymousUsers.length} anonim kullanıcı başarıyla silindi.`);
+      showSuccess('Başarılı', `${anonymousUsers.length} anonim kullanıcı ve ilgili verileri başarıyla silindi.`);
     } catch (err) {
       console.error('Error deleting anonymous users:', err);
       showError('Hata', 'Anonim kullanıcılar silinirken hata oluştu: ' + (err as { message?: string }).message);
