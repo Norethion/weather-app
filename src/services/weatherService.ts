@@ -271,7 +271,7 @@ export const weatherService = {
   // Hava kirliliği
   getAirQuality: async (lat: number, lon: number): Promise<AirQuality> => {
     if (!isApiKeyValid()) {
-      console.warn("API key not available or invalid. Returning mock air quality data.");
+      console.error("API key not available or invalid. Returning mock air quality data.");
       return mockAirQualityData;
     }
     try {
@@ -322,7 +322,7 @@ export const weatherService = {
   // Şehir adından koordinat alma (reverse geocoding)
   getCoordinatesFromCity: async (city: string): Promise<{ lat: number; lon: number }> => {
     if (!isApiKeyValid()) {
-      console.warn("API key not available or invalid. Returning mock coordinates.");
+      console.error("API key not available or invalid. Returning mock coordinates.");
       return { lat: 41.0082, lon: 28.9784 }; // Istanbul coordinates
     }
     

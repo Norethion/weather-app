@@ -143,7 +143,7 @@ export const cityService = {
       return suggestions.slice(0, 6);
       
     } catch (error) {
-      console.warn('Nominatim API error, using fallback:', error);
+      console.error('Nominatim API error, using fallback:', error);
       // API hatası durumunda fallback veritabanını kullan
       return cityService.getFallbackCitySuggestions(query);
     }

@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { weatherService, CurrentWeather, ForecastDay, AirQuality } from './services/weatherService';
 import { useGeolocation } from './hooks/useGeolocation';
 import { useTheme } from './hooks/useLocalStorage';
+import { useFirebaseSettings } from './hooks/useFirebaseSettings';
 
 import { useToast } from './hooks/useToast';
 import { authService } from './services/firebase';
@@ -23,6 +24,9 @@ import DynamicBackground from './components/DynamicBackground';
 import ThemeSelector from './components/ThemeSelector';
 import AuthModal from './components/AuthModal';
 import LazySection from './components/LazySection';
+import UserStatus from './components/UserStatus';
+import AdminPanel from './components/AdminPanel';
+import ConfirmModal from './components/ConfirmModal';
 
 import './App.css';
 
@@ -31,6 +35,7 @@ const App: React.FC = () => {
   const { toasts, success, error: showError } = useToast();
   const { latitude, longitude, getCurrentPosition } = useGeolocation();
   const { actualTheme } = useTheme();
+  const { user, addSearch, isAuthenticated, isAdmin, loginAnonymously, language } = useFirebaseSettings();
 
   // State
   const [currentWeather, setCurrentWeather] = useState<CurrentWeather | null>(null);
@@ -40,18 +45,9 @@ const App: React.FC = () => {
   const [error, setError] = useState('');
   const [lastUpdate, setLastUpdate] = useState<Date | null>(null);
   const [locationRequested, setLocationRequested] = useState(false);
-  const [user, setUser] = useState<User | null>(null);
   const [showAuthModal, setShowAuthModal] = useState(false);
-
-
-  // Kullanıcı durumu dinle
-  useEffect(() => {
-    const unsubscribe = authService.onAuthStateChanged((user) => {
-      setUser(user);
-    });
-
-    return () => unsubscribe();
-  }, []);
+  const [showAdminPanel, setShowAdminPanel] = useState(false);
+  const [showAnonymousConfirm, setShowAnonymousConfirm] = useState(false);
 
   const fetchWeatherByLocation = useCallback(async (lat: number, lon: number) => {
     setLoading(true);
@@ -68,14 +64,22 @@ const App: React.FC = () => {
       setForecast(forecastData.list);
       setAirQuality(airQualityData);
       setLastUpdate(new Date());
-      //success('Başarılı', 'Konum hava durumu güncellendi.');
+      
+      // Arama logunu kaydet
+      if (isAuthenticated) {
+        try {
+          await addSearch(weatherData.name);
+        } catch (error) {
+          console.error('Failed to log search:', error);
+        }
+      }
     } catch (err: any) {
       setError(t('cityNotFound'));
       showError(t('error'), 'Hava durumu verileri alınamadı. Lütfen tekrar deneyin.');
     } finally {
       setLoading(false);
     }
-  }, [t, showError]);
+  }, [t, showError, isAuthenticated, addSearch]);
 
   const fetchWeatherByCity = useCallback(async (city: string) => {
     setLoading(true);
@@ -95,14 +99,22 @@ const App: React.FC = () => {
       setForecast(forecastData.list);
       setAirQuality(airQualityData);
       setLastUpdate(new Date());
-      //success('Başarılı', `${city} için hava durumu verileri güncellendi.`);
+      
+      // Arama logunu kaydet
+      if (isAuthenticated) {
+        try {
+          await addSearch(city);
+        } catch (error) {
+          console.error('Failed to log search:', error);
+        }
+      }
     } catch (err: any) {
       setError(t('cityNotFound'));
       showError(t('error'), `${city} için hava durumu verileri alınamadı. Lütfen tekrar deneyin.`);
     } finally {
       setLoading(false);
     }
-  }, [t, showError]);
+  }, [t, showError, isAuthenticated, addSearch]);
 
   const handleLocationSearch = useCallback(() => {
     setLoading(true);
@@ -126,6 +138,13 @@ const App: React.FC = () => {
     }
   }, [latitude, longitude, locationRequested, fetchWeatherByLocation]);
 
+  // Firebase'den gelen dil ayarını i18n ile senkronize et
+  useEffect(() => {
+    if (language && i18n.language !== language) {
+      i18n.changeLanguage(language);
+    }
+  }, [language, i18n]);
+
   // Dil değişikliğinde sadece UI'ı güncelle, veri fetch etme
   useEffect(() => {
     // Sadece UI'ı yeniden render et, veri fetch etme
@@ -145,6 +164,24 @@ const App: React.FC = () => {
     } catch (error) {
       showError(t('error'), t('logoutError') || 'Çıkış yapılamadı');
     }
+  };
+
+  const handleAnonymousLogin = async () => {
+    setShowAnonymousConfirm(true);
+  };
+
+  const confirmAnonymousLogin = async () => {
+    setShowAnonymousConfirm(false);
+    try {
+      await loginAnonymously();
+      success(t('success'), t('anonymousLoginSuccess') || 'Anonim olarak giriş yapıldı');
+    } catch (error) {
+      showError(t('error'), t('anonymousLoginError') || 'Anonim giriş yapılamadı');
+    }
+  };
+
+  const cancelAnonymousLogin = () => {
+    setShowAnonymousConfirm(false);
   };
 
   return (
@@ -184,24 +221,47 @@ const App: React.FC = () => {
                 <div className="flex items-center gap-2 sm:gap-4 w-full sm:w-auto justify-center sm:justify-end">
                   <ThemeSelector />
                   <LanguageSelector />
-                  {user ? (
-                    <motion.button
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      onClick={handleLogout}
-                      className="px-3 py-2 sm:px-4 sm:py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors text-sm sm:text-base min-h-[44px] touch-manipulation"
-                    >
-                      {t('logout')}
-                    </motion.button>
+                  {isAuthenticated ? (
+                    <>
+                      {isAdmin && (
+                        <motion.button
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          onClick={() => setShowAdminPanel(true)}
+                          className="px-3 py-2 sm:px-4 sm:py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-colors text-sm sm:text-base min-h-[44px] touch-manipulation flex items-center gap-2"
+                        >
+                          <span>👑</span>
+                          {t('adminPanel')}
+                        </motion.button>
+                      )}
+                      <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={handleLogout}
+                        className="px-3 py-2 sm:px-4 sm:py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors text-sm sm:text-base min-h-[44px] touch-manipulation"
+                      >
+                        {t('logout')}
+                      </motion.button>
+                    </>
                   ) : (
-                    <motion.button
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      onClick={() => setShowAuthModal(true)}
-                      className="px-3 py-2 sm:px-4 sm:py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-sm sm:text-base min-h-[44px] touch-manipulation"
-                    >
-                      {t('login')}
-                    </motion.button>
+                    <div className="flex gap-2">
+                      <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={handleAnonymousLogin}
+                        className="px-3 py-2 sm:px-4 sm:py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors text-sm sm:text-base min-h-[44px] touch-manipulation"
+                      >
+                        {t('anonymousLogin') || 'Anonim'}
+                      </motion.button>
+                      <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => setShowAuthModal(true)}
+                        className="px-3 py-2 sm:px-4 sm:py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-sm sm:text-base min-h-[44px] touch-manipulation"
+                      >
+                        {t('login')}
+                      </motion.button>
+                    </div>
                   )}
                 </div>
               </motion.div>
@@ -303,7 +363,7 @@ const App: React.FC = () => {
                 <div className="flex items-center gap-2 sm:gap-4 w-full sm:w-auto justify-center sm:justify-end">
                   <ThemeSelector />
                   <LanguageSelector />
-                  {user ? (
+                  {isAuthenticated ? (
                     <motion.button
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
@@ -313,14 +373,24 @@ const App: React.FC = () => {
                       {t('logout')}
                     </motion.button>
                   ) : (
-                    <motion.button
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      onClick={() => setShowAuthModal(true)}
-                      className="px-3 py-2 sm:px-4 sm:py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-sm sm:text-base min-h-[44px] touch-manipulation"
-                    >
-                      {t('login')}
-                    </motion.button>
+                    <div className="flex gap-2">
+                      <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={handleAnonymousLogin}
+                        className="px-3 py-2 sm:px-4 sm:py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors text-sm sm:text-base min-h-[44px] touch-manipulation"
+                      >
+                        {t('anonymousLogin') || 'Anonim'}
+                      </motion.button>
+                      <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => setShowAuthModal(true)}
+                        className="px-3 py-2 sm:px-4 sm:py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-sm sm:text-base min-h-[44px] touch-manipulation"
+                      >
+                        {t('login')}
+                      </motion.button>
+                    </div>
                   )}
                 </div>
               </motion.div>
@@ -359,6 +429,21 @@ const App: React.FC = () => {
                   <p className={`${actualTheme === 'dark' ? 'text-gray-200' : 'text-gray-600'} opacity-75 mb-6`}>
                     {t('welcomeDesc')}
                   </p>
+                  
+                  {/* Firebase Status */}
+                  {isAuthenticated && (
+                    <div className="mb-6 p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                      <h3 className="font-semibold text-green-800 dark:text-green-400 mb-2">
+                        {user?.isAnonymous ? t('anonymousUser') || 'Anonim Kullanıcı' : t('authenticatedUser') || 'Giriş Yapıldı'}
+                      </h3>
+                      <p className="text-sm text-green-600 dark:text-green-300 mb-3">
+                        {user?.isAnonymous 
+                          ? t('anonymousSyncInfo') || 'Ayarlarınız anonim olarak kaydediliyor'
+                          : t('syncInfo') || 'Ayarlarınız senkronize ediliyor'
+                        }
+                      </p>
+                    </div>
+                  )}
                   
                   {/* API Key Test */}
                   <div className="mb-6 p-4 bg-blue-50 rounded-lg">
@@ -412,6 +497,35 @@ const App: React.FC = () => {
         {toasts.map(toast => (
           <Toast key={toast.id} {...toast} />
         ))}
+
+        {/* User Status */}
+        <UserStatus />
+
+        {/* Admin Panel */}
+        {showAdminPanel && isAdmin && (
+          <AdminPanel 
+            isOpen={showAdminPanel}
+            onClose={() => setShowAdminPanel(false)}
+            currentUser={user}
+          />
+        )}
+
+        {/* Anonim Giriş Onay Modalı */}
+        <ConfirmModal
+          open={showAnonymousConfirm}
+          title="Anonim Giriş Uyarısı"
+          message={`⚠️ Önemli: Anonim kullanıcı olarak giriş yaptığınızda:
+
+• Favorileriniz, ayarlarınız ve arama geçmişiniz sadece bu oturum için kaydedilir
+• Çıkış yaptığınızda tüm verileriniz kalıcı olarak silinir
+• Verilerinizi kalıcı olarak kaydetmek için normal hesap oluşturmanız önerilir
+
+Devam etmek istiyor musunuz?`}
+          confirmText="Evet, Devam Et"
+          cancelText="Vazgeç"
+          onConfirm={confirmAnonymousLogin}
+          onCancel={cancelAnonymousLogin}
+        />
       </div>
     </ErrorBoundary>
   );

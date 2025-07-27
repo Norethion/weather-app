@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { authService } from '../services/firebase';
-
+import ConfirmModal from './ConfirmModal';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -19,57 +19,54 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess, showE
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showAnonymousConfirm, setShowAnonymousConfirm] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      if (!isLogin && password !== confirmPassword) {
-        showError(t('error'), t('passwordsDoNotMatch') || 'Şifreler eşleşmiyor');
-        return;
-      }
-
       if (isLogin) {
         await authService.login(email, password);
-        showSuccess(t('success'), t('loginSuccess') || 'Başarıyla giriş yapıldı');
+        showSuccess(t('success'), t('loginSuccess') || 'Giriş başarılı');
       } else {
+        if (password !== confirmPassword) {
+          showError(t('error'), t('passwordMismatch') || 'Şifreler eşleşmiyor');
+          return;
+        }
         await authService.register(email, password);
-        showSuccess(t('success'), t('registerSuccess') || 'Hesap başarıyla oluşturuldu');
+        showSuccess(t('success'), t('registerSuccess') || 'Kayıt başarılı');
       }
-
       onSuccess();
       onClose();
     } catch (error: any) {
-
-      
-      let errorMessage = t('generalError') || 'Bir hata oluştu';
-      
-      if (error.code === 'auth/user-not-found') {
-        errorMessage = t('userNotFound') || 'Kullanıcı bulunamadı';
-      } else if (error.code === 'auth/wrong-password') {
-        errorMessage = t('wrongPassword') || 'Yanlış şifre';
-      } else if (error.code === 'auth/invalid-credential') {
-        errorMessage = t('invalidCredential') || 'E-posta veya şifre yanlış';
-      } else if (error.code === 'auth/email-already-in-use') {
-        errorMessage = t('emailAlreadyInUse') || 'Bu e-posta adresi zaten kullanımda';
-      } else if (error.code === 'auth/weak-password') {
-        errorMessage = t('weakPassword') || 'Şifre çok zayıf';
-      } else if (error.code === 'auth/invalid-email') {
-        errorMessage = t('invalidEmail') || 'Geçersiz e-posta adresi';
-      } else if (error.code === 'auth/too-many-requests') {
-        errorMessage = t('tooManyRequests') || 'Çok fazla başarısız giriş denemesi. Lütfen daha sonra tekrar deneyin';
-      } else if (error.code === 'auth/user-disabled') {
-        errorMessage = t('userDisabled') || 'Bu hesap devre dışı bırakılmış';
-      } else if (error.code === 'auth/network-request-failed') {
-        errorMessage = t('networkError') || 'Ağ bağlantısı hatası. İnternet bağlantınızı kontrol edin';
-      }
-
-
-      showError(t('error'), errorMessage);
+      showError(t('error'), error.message || 'Bir hata oluştu');
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleAnonymousLogin = async () => {
+    setShowAnonymousConfirm(true);
+  };
+
+  const confirmAnonymousLogin = async () => {
+    setShowAnonymousConfirm(false);
+    setLoading(true);
+    try {
+      await authService.loginAnonymously();
+      showSuccess(t('success'), t('anonymousLoginSuccess') || 'Anonim olarak giriş yapıldı');
+      onSuccess();
+      onClose();
+    } catch (error: any) {
+      showError(t('error'), t('anonymousLoginError') || 'Anonim giriş yapılamadı');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const cancelAnonymousLogin = () => {
+    setShowAnonymousConfirm(false);
   };
 
   const resetForm = () => {
@@ -108,6 +105,28 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess, showE
               >
                 ✕
               </motion.button>
+            </div>
+
+            {/* Anonim Giriş Butonu */}
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={handleAnonymousLogin}
+              disabled={loading}
+              className="w-full bg-gray-500 text-white py-3 px-4 rounded-md hover:bg-gray-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed mb-4"
+            >
+              {loading ? t('loading') : (t('anonymousLogin') || 'Anonim Olarak Giriş Yap')}
+            </motion.button>
+
+            <div className="relative mb-6">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-gray-300 dark:border-gray-600"></div>
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="px-2 bg-white dark:bg-gray-800 text-gray-500">
+                  {t('or') || 'veya'}
+                </span>
+              </div>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -179,6 +198,30 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess, showE
                 {isLogin ? t('noAccount') : t('haveAccount')}
               </button>
             </div>
+
+            {/* Anonim giriş bilgilendirmesi */}
+            <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+              <p className="text-xs text-blue-600 dark:text-blue-400 text-center">
+                {t('anonymousLoginInfo') || 'Anonim giriş ile ayarlarınızı kaydedebilir ve favori şehirlerinizi senkronize edebilirsiniz.'}
+              </p>
+            </div>
+
+            {/* Anonim Giriş Onay Modalı */}
+            <ConfirmModal
+              open={showAnonymousConfirm}
+              title="Anonim Giriş Uyarısı"
+              message={`⚠️ Önemli: Anonim kullanıcı olarak giriş yaptığınızda:
+
+• Favorileriniz, ayarlarınız ve arama geçmişiniz sadece bu oturum için kaydedilir
+• Çıkış yaptığınızda tüm verileriniz kalıcı olarak silinir
+• Verilerinizi kalıcı olarak kaydetmek için normal hesap oluşturmanız önerilir
+
+Devam etmek istiyor musunuz?`}
+              confirmText="Evet, Devam Et"
+              cancelText="Vazgeç"
+              onConfirm={confirmAnonymousLogin}
+              onCancel={cancelAnonymousLogin}
+            />
           </motion.div>
         </motion.div>
       )}

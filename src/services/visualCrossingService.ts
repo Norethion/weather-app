@@ -64,7 +64,7 @@ export const visualCrossingService = {
       });
       return response.data.days;
     } catch (error: any) {
-      console.warn('API limit exceeded, using mock data for monthly stats');
+      console.error('API limit exceeded, using mock data for monthly stats');
       return generateMockData(city, 28);
     }
   },
@@ -82,7 +82,7 @@ export const visualCrossingService = {
       });
       return response.data.days;
     } catch (error: any) {
-      console.warn('API limit exceeded, using mock data for yearly stats');
+      console.error('API limit exceeded, using mock data for yearly stats');
       return generateMockData(city, 365);
     }
   },
@@ -100,7 +100,7 @@ export const visualCrossingService = {
       });
       return response.data.days[0]?.hours || [];
     } catch (error: any) {
-      console.warn('API limit exceeded, using mock data for hourly forecast');
+      console.error('API limit exceeded, using mock data for hourly forecast');
       return generateMockHourlyData(city, date);
     }
   },
@@ -122,7 +122,7 @@ export const visualCrossingService = {
       });
       return response.data.days;
     } catch (error: any) {
-      console.warn('API limit exceeded, using mock data for weekly stats');
+      console.error('API limit exceeded, using mock data for weekly stats');
       return generateMockData(city, 7);
     }
   },
